@@ -29,7 +29,7 @@ class RatingCommand() : AbstractCommand("rating") {
         val executor = core.getUserFromSender(sender, luckPerms)
         if(args.isEmpty()) {
             val currentRating = core.getCurrentRating(executor) ?: return
-            sender.sendPlayerCurrentRatingMessage(currentRating)
+            sender.sendPlayerCurrentRatingMessage(sender.name, currentRating)
             return
         }
 
@@ -140,7 +140,7 @@ class RatingCommand() : AbstractCommand("rating") {
         val user = checkPlayerExists(sender, args[0]) ?: return
 
         val rating = core.getCurrentRating(user) ?: return
-        sender.sendPlayerCurrentRatingMessage(rating)
+        sender.sendPlayerCurrentRatingMessage(user.username ?: "", rating)
     }
 
     private fun showHistory(sender: CommandSender, targetPlayer: String? = null, page: Int? = null) {

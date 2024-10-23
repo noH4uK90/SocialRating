@@ -2,14 +2,12 @@ package org.example.noh4uk.socialRating.core.db
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import org.example.noh4uk.socialRating.SocialRating
 import java.sql.Connection
 
 class MySQLDatabase(host: String, port: Int, database: String, user: String, password: String): Database {
     private val dataSource: HikariDataSource
 
     init {
-        SocialRating.getInstance().logger.info("Start mysql initialization")
         val config = HikariConfig()
         config.jdbcUrl = "jdbc:mysql://$host:$port/$database"
         config.username = user

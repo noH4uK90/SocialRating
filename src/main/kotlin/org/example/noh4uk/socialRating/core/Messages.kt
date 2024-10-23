@@ -74,9 +74,9 @@ fun CommandSender.sendNoNumberMessage() {
     this.sendMessage(miniMessage.deserialize(noNumber))
 }
 
-fun CommandSender.sendPlayerCurrentRatingMessage(rating: Int) {
+fun CommandSender.sendPlayerCurrentRatingMessage(username: String, rating: Int) {
     val currentRating = config.getString("messages.currentRating") ?: return
-    var message = currentRating.replace("{username}", this.name)
+    var message = currentRating.replace("{username}", username)
 
     message = if (!config.getBoolean("colors.rating.enabled")) {
         message.replace("{rating}", rating.toString())
