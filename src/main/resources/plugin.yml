@@ -18,5 +18,7 @@ permissions:
     description: Allow you to remove rating
   social.rating.history:
     description: Allow you to view rating history
+  social.rating.history.remove:
+    description: Allow you to remove history element
   social.rating.current:
     description: Allow you to view players current rating

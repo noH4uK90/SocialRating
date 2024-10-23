@@ -2,6 +2,7 @@ package org.example.noh4uk.socialRating.command
 
 import net.luckperms.api.LuckPerms
 import net.luckperms.api.model.user.User
+import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.example.noh4uk.socialRating.SocialRating
 import org.example.noh4uk.socialRating.core.SocialRatingCore
@@ -10,13 +11,18 @@ import org.example.noh4uk.socialRating.models.ChangingRatingType
 import org.example.noh4uk.socialRating.models.CommandType
 import org.example.noh4uk.socialRating.utils.Permission
 import org.example.noh4uk.socialRating.utils.Permissions
+import org.example.noh4uk.socialRating.utils.sendAddRatingMessage
 import org.example.noh4uk.socialRating.utils.sendDontExistPlayer
 import org.example.noh4uk.socialRating.utils.sendHistoryMessage
 import org.example.noh4uk.socialRating.utils.sendNoNumberMessage
 import org.example.noh4uk.socialRating.utils.sendNoPermissionMessage
 import org.example.noh4uk.socialRating.utils.sendPlayerCurrentRatingMessage
+import org.example.noh4uk.socialRating.utils.sendRemoveHistoryElementMessage
+import org.example.noh4uk.socialRating.utils.sendRemoveRatingMessage
 import org.example.noh4uk.socialRating.utils.sendUnknownCommandMessage
 import org.example.noh4uk.socialRating.utils.sendUsageMessage
+import org.example.noh4uk.socialRating.utils.sendWhomAddRatingMessage
+import org.example.noh4uk.socialRating.utils.sendWhomRemoveRatingMessage
 
 class RatingCommand() : AbstractCommand("rating") {
     private val luckPerms: LuckPerms = SocialRating.getLuckPerms()
@@ -40,7 +46,11 @@ class RatingCommand() : AbstractCommand("rating") {
                 return
             }
             CommandType.Remove.name.lowercase() -> {
-                handleRemoveRating(sender, args)
+                if (args.size == 2) {
+                    handleRemoveHistoryElement(sender, args)
+                } else {
+                    handleRemoveRating(sender, args)
+                }
                 return
             }
             CommandType.History.name.lowercase() -> {
@@ -174,6 +184,7 @@ class RatingCommand() : AbstractCommand("rating") {
     private fun handleChangeRating(sender: CommandSender, args: Array<String>, type: ChangingRatingType) {
         val user = checkPlayerExists(sender, args[1]) ?: return
         val changerPlayer = core.getUserFromSender(sender, luckPerms)
+        val receiver = Bukkit.getPlayer(user.uniqueId)
 
         if (!args[2].isNumeric()) {
             sender.sendNoNumberMessage()
@@ -182,8 +193,31 @@ class RatingCommand() : AbstractCommand("rating") {
         val count = args[2].toInt()
         val reason = args.slice(3 until args.size).joinToString(" ")
         when (type) {
-            ChangingRatingType.Add -> core.addRating(user, changerPlayer, count, reason)
-            ChangingRatingType.Remove -> core.removeRating(user, changerPlayer, count, reason)
+            ChangingRatingType.Add ->  {
+                core.addRating(user, changerPlayer, count, reason)
+                sender.sendAddRatingMessage(user.username ?: "", count)
+                if (receiver?.isOnline ?: false) {
+                    receiver.sendWhomAddRatingMessage(changerPlayer.username ?: "", count)
+                }
+            }
+            ChangingRatingType.Remove -> {
+                core.removeRating(user, changerPlayer, count, reason)
+                sender.sendRemoveRatingMessage(user.username ?: "", count)
+                if (receiver?.isOnline ?: false) {
+                    receiver.sendWhomRemoveRatingMessage(changerPlayer.username ?: "", count)
+                }
+            }
+        }
+    }
+
+    private fun handleRemoveHistoryElement(sender: CommandSender, args: Array<String>) {
+        sender.hasAnyPermission(Permissions.RemoveHistory, Permissions.All) {
+            if (args.size < 2) {
+                return@hasAnyPermission
+            }
+
+            core.removeHistoryElement(args[1])
+            sender.sendRemoveHistoryElementMessage()
         }
     }
 

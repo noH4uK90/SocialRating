@@ -22,6 +22,7 @@ interface Database {
         rating: Int,
         reason: String
     ) = withContext(Dispatchers.IO) {
+        addHistory(player, changerPlayer, rating, reason, ChangingRatingType.Add)
         prepareStatement("""
             UPDATE player_rating
             SET current_rating = current_rating + ?
@@ -45,6 +46,7 @@ interface Database {
         rating: Int,
         reason: String,
     ) = withContext(Dispatchers.IO) {
+        addHistory(player, changerPlayer, rating, reason, ChangingRatingType.Remove)
         prepareStatement("""
             UPDATE player_rating
             SET current_rating = current_rating - ?
@@ -94,7 +96,7 @@ interface Database {
             val totalItems = if (countResultSet.next()) countResultSet.getInt(1) else 0
 
             val historyStatement = connection.prepareStatement("""
-                SELECT date, player_id_changer, player_changer, count, reason, type
+                SELECT id, date, player_id_changer, player_changer, count, reason, type
                 FROM rating_history
                 WHERE player_id = ?
                 ORDER BY date DESC
@@ -110,6 +112,7 @@ interface Database {
             while (resultSet.next()) {
                 historyItems.add(
                     RatingHistory(
+                        id = UUID.fromString(resultSet.getString("id")),
                         date = resultSet.getString("date"),
                         playerIdChanger = UUID.fromString(resultSet.getString("player_id_changer")),
                         playerChanger = resultSet.getString("player_changer"),
@@ -149,6 +152,51 @@ interface Database {
             val rowsAffected = statement.executeUpdate()
             if (rowsAffected > 0) {
                 connection.commit()
+            }
+        }
+    }
+
+    suspend fun removeHistoryElement(id: String) = withContext(Dispatchers.IO) {
+        prepareConnection { connection ->
+            connection.prepareStatement(
+                """
+            SELECT player_id, count, type FROM rating_history WHERE id = ?
+        """
+            ).use { selectStatement ->
+                selectStatement.setString(1, id)
+                val resultSet = selectStatement.executeQuery()
+
+                if (resultSet.next()) {
+                    val playerId = resultSet.getString("player_id")
+                    val count = resultSet.getInt("count")
+                    val type = resultSet.getString("type")
+
+                    connection.prepareStatement(
+                        """
+                    DELETE FROM rating_history WHERE id = ?
+                """
+                    ).use { deleteStatement ->
+                        deleteStatement.setString(1, id)
+                        deleteStatement.executeUpdate()
+                    }
+
+                    val ratingChange = if (type == "Add") -count else count
+                    connection.prepareStatement(
+                        """
+                    UPDATE player_rating 
+                    SET current_rating = current_rating + ? 
+                    WHERE player_id = ?
+                """
+                    ).use { updateStatement ->
+                        updateStatement.setInt(1, ratingChange)
+                        updateStatement.setString(2, playerId)
+                        updateStatement.executeUpdate()
+                    }
+
+                    connection.commit()
+                } else {
+                    connection.rollback()
+                }
             }
         }
     }

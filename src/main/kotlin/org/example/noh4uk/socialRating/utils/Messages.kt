@@ -2,8 +2,10 @@ package org.example.noh4uk.socialRating.utils
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.serializer.json.JSONComponentSerializer
 import net.luckperms.api.model.user.User
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 import org.example.noh4uk.socialRating.SocialRating
 import org.example.noh4uk.socialRating.utils.Utils.Companion.getColoredType
 import org.example.noh4uk.socialRating.utils.Utils.Companion.getRatingColor
@@ -18,6 +20,7 @@ fun CommandSender.sendHistoryMessage(user: User, history: PagedList<RatingHistor
     val header = config.getString("messages.history.header") ?: return
     val body = config.getString("messages.history.body") ?: return
     val footer = config.getString("messages.history.footer") ?: return
+    val delete = config.getString("messages.history.delete") ?: return
 
     val parsedHeader = miniMessage.deserialize(header.replace("{player}", user.username ?: return))
     val parsedFooter = miniMessage.deserialize(
@@ -29,6 +32,7 @@ fun CommandSender.sendHistoryMessage(user: User, history: PagedList<RatingHistor
     val parsedBody = Component.text()
 
     for (element in history.elements) {
+        parsedBody.append(JSONComponentSerializer.json().deserialize(delete.replace("{id}", element.id.toString())).appendSpace())
         parsedBody.append(miniMessage.deserialize(
             body
                 .replace("{date}", element.date)
@@ -89,4 +93,32 @@ fun CommandSender.sendPlayerCurrentRatingMessage(username: String, rating: Int) 
         }
     }
     this.sendMessage(miniMessage.deserialize(message))
+}
+
+fun CommandSender.sendAddRatingMessage(username: String, rating: Int) {
+    val addRating = config.getString("messages.rating.add.who") ?: return
+
+    this.sendMessage(miniMessage.deserialize(addRating.replace("{username}", username).replace("{rating}", rating.toString())))
+}
+
+fun CommandSender.sendRemoveRatingMessage(username: String, rating: Int) {
+    val addRating = config.getString("messages.rating.remove.who") ?: return
+
+    this.sendMessage(miniMessage.deserialize(addRating.replace("{username}", username).replace("{rating}", rating.toString())))
+}
+
+fun Player.sendWhomAddRatingMessage(username: String, rating: Int) {
+    val addRating = config.getString("messages.rating.add.whom") ?: return
+
+    this.sendMessage(miniMessage.deserialize(addRating.replace("{username}", username).replace("{rating}", rating.toString())))
+}
+
+fun Player.sendWhomRemoveRatingMessage(username: String, rating: Int) {
+    val addRating = config.getString("messages.rating.remove.whom") ?: return
+
+    this.sendMessage(miniMessage.deserialize(addRating.replace("{username}", username).replace("{rating}", rating.toString())))
+}
+
+fun CommandSender.sendRemoveHistoryElementMessage() {
+    this.sendMessage("Вы удалили запись о рейтинге")
 }

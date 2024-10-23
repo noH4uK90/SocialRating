@@ -18,9 +18,12 @@ class Utils {
         fun getRatingColor(rating: Int): String? {
             val config = SocialRating.getInstance().config
             return when {
-                rating > config.getInt("upperThreshold") -> config.getString("colors.rating.high")
-                rating < config.getInt("lowerThreshold") -> config.getString("colors.rating.low")
-                else -> config.getString("colors.rating.normal")
+                rating < config.getInt("lessThan1") -> config.getString("colors.rating.lessThan1")
+                rating < config.getInt("lessThan2") -> config.getString("colors.rating.lessThan2")
+                rating < config.getInt("lessThan3") -> config.getString("colors.rating.lessThan3")
+                rating < config.getInt("lessThan4") -> config.getString("colors.rating.lessThan4")
+                rating < config.getInt("lessThan5") -> config.getString("colors.rating.lessThan5")
+                else -> config.getString("colors.rating.moreThan5")
             }
         }
     }

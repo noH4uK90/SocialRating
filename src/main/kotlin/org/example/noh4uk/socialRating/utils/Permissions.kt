@@ -11,4 +11,5 @@ enum class Permissions(override val full: String): Permission {
     Remove("social.rating.remove"),
     History("social.rating.history"),
     Current("social.rating.current"),
+    RemoveHistory("social.rating.history.remove"),
 }

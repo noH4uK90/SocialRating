@@ -87,6 +87,10 @@ class SocialRatingCore {
         db?.getRatingHistory(player, page) ?: PagedList(page = 0, pageSize = 0, totalPages = 0, totalItems = 0, elements = emptyList())
     }
 
+    fun removeHistoryElement(id: String) = runBlocking {
+        db?.removeHistoryElement(id)
+    }
+
     fun close() {
         db?.close()
     }

@@ -7,9 +7,17 @@ database:
   password: 'P@ssw0rd'
 
 messages:
+  rating:
+    add:
+      who: 'Вы увеличили рейтинг {username} на {rating}'
+      whom: '{username} увеличил Ваш рейтинг на {rating}'
+    remove:
+      who: 'Вы уменьшили рейтинг {username} на {rating}'
+      whom: '{username} уменьшил Ваш рейтинг на {rating}'
   history:
+    delete: '["",{"text":"[","color":"#FF0003"},{"text":"\u0423\u0434\u0430\u043b\u0438\u0442\u044c","color":"#FF0003","clickEvent":{"action":"run_command","value":"/rating remove {id}"}},{"text":"]","color":"#FF0003"}]'
     header: '<newline>История рейтинга <bold>{player}</bold>:<newline><newline>'
-    body: '[<yellow>{date}</yellow>]<newline><bold>{player}</bold> <dark_gray>| <white>{count} <dark_gray>| <gray>{changer}<newline>{type} <dark_gray>>> <white>{reason}</white><newline><newline>'
+    body: '[<yellow>{date}</yellow>]<newline><bold>{player}</bold> <dark_gray>| <white>{count} <dark_gray>| <gray>{changer}<newline>{type} <dark_gray>>> <white>{reason}</white>'
     footer: 'Страница {page} из <bold>{totalPages}</bold> | Всего записей: <bold>{totalItems}</bold>'
   dontExistPlayer: 'Игрока с ником <italic>{username}</italic> не существует.'
   noPermission: '<red>У Вас недостаточно прав.</red>'
@@ -24,9 +32,15 @@ messages:
 colors:
   rating:
     enabled: true
-    high: 'green'
-    normal: 'gray'
-    low: 'red'
+    lessThan1: 'red'
+    lessThan2: '#ffa500'
+    lessThan3: 'yellow'
+    lessThan4: 'green'
+    lessThan5: '#800080'
+    moreThan5: 'rainbow'
 
-lowerThreshold: 50
-upperThreshold: 150
+lessThan1: 20
+lessThan2: 50
+lessThan3: 100
+lessThan4: 150
+lessThan5: 300
