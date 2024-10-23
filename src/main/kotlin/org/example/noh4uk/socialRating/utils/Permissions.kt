@@ -1,6 +1,11 @@
-package org.example.noh4uk.socialRating.core.models
+package org.example.noh4uk.socialRating.utils
 
-enum class Permissions(val full: String) {
+
+interface Permission {
+    val full: String
+}
+
+enum class Permissions(override val full: String): Permission {
     All("social.rating.*"),
     Add("social.rating.add"),
     Remove("social.rating.remove"),

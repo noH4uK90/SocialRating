@@ -9,9 +9,9 @@ import org.example.noh4uk.socialRating.SocialRating
 import org.example.noh4uk.socialRating.core.db.Database
 import org.example.noh4uk.socialRating.core.db.MySQLDatabase
 import org.example.noh4uk.socialRating.core.db.SQLiteDatabase
-import org.example.noh4uk.socialRating.core.extensions.whenAllNotNull
-import org.example.noh4uk.socialRating.core.models.PagedList
-import org.example.noh4uk.socialRating.core.models.RatingHistory
+import org.example.noh4uk.socialRating.extensions.whenAllNotNull
+import org.example.noh4uk.socialRating.models.PagedList
+import org.example.noh4uk.socialRating.models.RatingHistory
 import java.io.File
 import java.sql.SQLException
 

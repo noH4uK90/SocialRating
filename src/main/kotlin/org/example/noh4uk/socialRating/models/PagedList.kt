@@ -1,4 +1,4 @@
-package org.example.noh4uk.socialRating.core.models
+package org.example.noh4uk.socialRating.models
 
 data class PagedList<TItem>(
     val page: Int,

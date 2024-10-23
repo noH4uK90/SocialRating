@@ -5,17 +5,18 @@ import net.luckperms.api.model.user.User
 import org.bukkit.command.CommandSender
 import org.example.noh4uk.socialRating.SocialRating
 import org.example.noh4uk.socialRating.core.SocialRatingCore
-import org.example.noh4uk.socialRating.core.Utils.Companion.isNumeric
-import org.example.noh4uk.socialRating.core.models.ChangingRatingType
-import org.example.noh4uk.socialRating.core.models.CommandType
-import org.example.noh4uk.socialRating.core.models.Permissions
-import org.example.noh4uk.socialRating.core.sendDontExistPlayer
-import org.example.noh4uk.socialRating.core.sendHistoryMessage
-import org.example.noh4uk.socialRating.core.sendNoNumberMessage
-import org.example.noh4uk.socialRating.core.sendNoPermissionMessage
-import org.example.noh4uk.socialRating.core.sendPlayerCurrentRatingMessage
-import org.example.noh4uk.socialRating.core.sendUnknownCommandMessage
-import org.example.noh4uk.socialRating.core.sendUsageMessage
+import org.example.noh4uk.socialRating.utils.Utils.Companion.isNumeric
+import org.example.noh4uk.socialRating.models.ChangingRatingType
+import org.example.noh4uk.socialRating.models.CommandType
+import org.example.noh4uk.socialRating.utils.Permission
+import org.example.noh4uk.socialRating.utils.Permissions
+import org.example.noh4uk.socialRating.utils.sendDontExistPlayer
+import org.example.noh4uk.socialRating.utils.sendHistoryMessage
+import org.example.noh4uk.socialRating.utils.sendNoNumberMessage
+import org.example.noh4uk.socialRating.utils.sendNoPermissionMessage
+import org.example.noh4uk.socialRating.utils.sendPlayerCurrentRatingMessage
+import org.example.noh4uk.socialRating.utils.sendUnknownCommandMessage
+import org.example.noh4uk.socialRating.utils.sendUsageMessage
 
 class RatingCommand() : AbstractCommand("rating") {
     private val luckPerms: LuckPerms = SocialRating.getLuckPerms()
@@ -88,27 +89,25 @@ class RatingCommand() : AbstractCommand("rating") {
     }
 
     private fun handleAddRating(sender: CommandSender, args: Array<String>) {
-        if(!sender.checkPermission(Permissions.Add)) return
+        sender.hasAnyPermission(Permissions.Add, Permissions.All) {
+            if (args.size < 4) {
+                sender.sendUsageMessage(CommandType.Add)
+                return@hasAnyPermission
+            }
 
-        if (args.size < 4) {
-            sender.sendUsageMessage(CommandType.Add)
-            return
+            handleChangeRating(sender, args, ChangingRatingType.Add)
         }
-
-        handleChangeRating(sender, args, ChangingRatingType.Add)
-        return
     }
 
     private fun handleRemoveRating(sender: CommandSender, args: Array<String>) {
-        if(!sender.checkPermission(Permissions.Remove)) return
+        sender.hasAnyPermission(Permissions.Remove, Permissions.All) {
+            if (args.size < 4) {
+                sender.sendUsageMessage(CommandType.Remove)
+                return@hasAnyPermission
+            }
 
-        if (args.size < 4) {
-            sender.sendUsageMessage(CommandType.Remove)
-            return
+            handleChangeRating(sender, args, ChangingRatingType.Remove)
         }
-
-        handleChangeRating(sender, args, ChangingRatingType.Remove)
-        return
     }
 
     private fun handleHistoryCommand(sender: CommandSender, args: Array<String>) {
@@ -119,28 +118,28 @@ class RatingCommand() : AbstractCommand("rating") {
                 when {
                     userOrPage.isNumeric() -> showHistory(sender, null, userOrPage.toInt())
                     else -> {
-                        if(!sender.checkPermission(Permissions.History)) return
-
-                        showHistory(sender, userOrPage)
+                        sender.hasAnyPermission(Permissions.History, Permissions.All) {
+                            showHistory(sender, userOrPage)
+                        }
                     }
                 }
             }
             3 -> {
-                if(!sender.checkPermission(Permissions.History)) return
-
-                showHistory(sender, args[1], args[2].toIntOrNull())
+                sender.hasAnyPermission(Permissions.History, Permissions.All) {
+                    showHistory(sender, args[1], args[2].toIntOrNull())
+                }
             }
             else -> sender.sendUsageMessage(CommandType.History)
         }
     }
 
     private fun handleCurrentRating(sender: CommandSender, args: Array<String>) {
-        if (!sender.checkPermission(Permissions.Current)) return
+        sender.hasAnyPermission(Permissions.Current, Permissions.All) {
+            val user = checkPlayerExists(sender, args[0]) ?: return@hasAnyPermission
 
-        val user = checkPlayerExists(sender, args[0]) ?: return
-
-        val rating = core.getCurrentRating(user) ?: return
-        sender.sendPlayerCurrentRatingMessage(user.username ?: "", rating)
+            val rating = core.getCurrentRating(user) ?: return@hasAnyPermission
+            sender.sendPlayerCurrentRatingMessage(user.username ?: "", rating)
+        }
     }
 
     private fun showHistory(sender: CommandSender, targetPlayer: String? = null, page: Int? = null) {
@@ -188,11 +187,27 @@ class RatingCommand() : AbstractCommand("rating") {
         }
     }
 
-    private fun CommandSender.checkPermission(permissions: Permissions): Boolean {
-        if (!this.hasPermission(permissions.full)) {
-            this.sendNoPermissionMessage()
-            return false
+    fun CommandSender.hasPermission(permission: Permission, sendNoPermissionMessage: Boolean = true, completion: () -> Unit) {
+        if (this.hasPermission(permission.full)) {
+            completion()
+            return
         }
-        return true
+
+        if (sendNoPermissionMessage) {
+            this.sendNoPermissionMessage()
+        }
+        return
+    }
+
+    fun CommandSender.hasAnyPermission(vararg permissions: Permission, sendNoPermissionMessage: Boolean = true, completion: () -> Unit) {
+        if (permissions.any { permission -> this.hasPermission(permission.full) }) {
+            completion()
+            return
+        }
+
+        if (sendNoPermissionMessage) {
+            this.sendNoPermissionMessage()
+        }
+        return
     }
 }

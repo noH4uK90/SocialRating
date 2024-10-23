@@ -1,15 +1,15 @@
-package org.example.noh4uk.socialRating.core
+package org.example.noh4uk.socialRating.utils
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.luckperms.api.model.user.User
 import org.bukkit.command.CommandSender
 import org.example.noh4uk.socialRating.SocialRating
-import org.example.noh4uk.socialRating.core.Utils.Companion.getColoredType
-import org.example.noh4uk.socialRating.core.Utils.Companion.getRatingColor
-import org.example.noh4uk.socialRating.core.models.CommandType
-import org.example.noh4uk.socialRating.core.models.PagedList
-import org.example.noh4uk.socialRating.core.models.RatingHistory
+import org.example.noh4uk.socialRating.utils.Utils.Companion.getColoredType
+import org.example.noh4uk.socialRating.utils.Utils.Companion.getRatingColor
+import org.example.noh4uk.socialRating.models.CommandType
+import org.example.noh4uk.socialRating.models.PagedList
+import org.example.noh4uk.socialRating.models.RatingHistory
 
 private val miniMessage = MiniMessage.miniMessage()
 private val config = SocialRating.getInstance().config

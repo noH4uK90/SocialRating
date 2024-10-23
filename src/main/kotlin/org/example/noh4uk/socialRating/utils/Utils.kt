@@ -1,7 +1,7 @@
-package org.example.noh4uk.socialRating.core
+package org.example.noh4uk.socialRating.utils
 
 import org.example.noh4uk.socialRating.SocialRating
-import org.example.noh4uk.socialRating.core.models.ChangingRatingType
+import org.example.noh4uk.socialRating.models.ChangingRatingType
 
 class Utils {
     companion object {

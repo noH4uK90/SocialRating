@@ -4,9 +4,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import net.luckperms.api.model.user.User
-import org.example.noh4uk.socialRating.core.models.ChangingRatingType
-import org.example.noh4uk.socialRating.core.models.PagedList
-import org.example.noh4uk.socialRating.core.models.RatingHistory
+import org.example.noh4uk.socialRating.models.ChangingRatingType
+import org.example.noh4uk.socialRating.models.PagedList
+import org.example.noh4uk.socialRating.models.RatingHistory
 import java.sql.Connection
 import java.sql.Date
 import java.sql.PreparedStatement
