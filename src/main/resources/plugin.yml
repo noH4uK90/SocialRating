@@ -1,0 +1,22 @@
+name: SocialRating
+version: '1.0'
+main: org.example.noh4uk.socialRating.SocialRating
+api-version: '1.20'
+commands:
+  rating: {}
+permissions:
+  social.rating.*:
+    description: Give access to all rating commands
+    children:
+      social.rating.add: true
+      social.rating.remove: true
+      social.rating.history: true
+      social.rating.current: true
+  social.rating.add:
+    description: Allow you to add rating
+  social.rating.remove:
+    description: Allow you to remove rating
+  social.rating.history:
+    description: Allow you to view rating history
+  social.rating.current:
+    description: Allow you to view players current rating

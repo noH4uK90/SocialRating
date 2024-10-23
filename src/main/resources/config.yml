@@ -1,0 +1,32 @@
+database:
+  enabled: true
+  host: 'localhost'
+  port: 3306
+  database: 'rating'
+  user: 'P@ssw0rd'
+  password: 'P@ssw0rd'
+
+messages:
+  history:
+    header: '<newline>История рейтинга <bold>{player}</bold>:<newline><newline>'
+    body: '[<yellow>{date}</yellow>]<newline><bold>{player}</bold> <dark_gray>| <white>{count} <dark_gray>| <gray>{changer}<newline>{type} <dark_gray>>> <white>{reason}</white><newline><newline>'
+    footer: 'Страница {page} из <bold>{totalPages}</bold> | Всего записей: <bold>{totalItems}</bold>'
+  dontExistPlayer: 'Игрока с ником <italic>{username}</italic> не существует.'
+  noPermission: '<red>У Вас недостаточно прав.</red>'
+  usage:
+    add: 'Добавить рейтинг: /rating add [Никнейм] [Количество] [Причина]'
+    remove: 'Убавить рейтинг: /rating remove [Никнейм] [Количество] [Причина]'
+    history: 'Просмотр истории: /rating history [Никнейм] [страница]'
+  unknownCommand: 'Неизвестная команда: {command}'
+  noNumber: 'Количество должно быть числом'
+  currentRating: 'Текущий рейтинг {username}: <bold>{rating}<bold>'
+
+colors:
+  rating:
+    enabled: true
+    high: 'green'
+    normal: 'gray'
+    low: 'red'
+
+lowerThreshold: 50
+upperThreshold: 150
